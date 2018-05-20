@@ -8,8 +8,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 SOURCES += \
     main.cpp \
-    gui.cpp
+    gui.cpp \
+    scribblearea.cpp
 
 HEADERS += \
-    gui.h
+    gui.h \
+    scribblearea.h
 
