@@ -21,3 +21,18 @@ void GUI::keyPressEvent(QKeyEvent *e)
     {
     }
 }
+
+
+void GUI::nextQuestion()
+{
+    loader.nextQuest(question);
+}
+void GUI::randomQuestion()
+{
+    loader.randQuest(question);
+}
+
+void GUI::arrangeGUI()
+{
+
+}

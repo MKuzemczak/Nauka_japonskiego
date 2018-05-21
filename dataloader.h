@@ -23,7 +23,8 @@ class DataLoader
     int questionAmount,
         currentQuestion;
 
-    QString dataPath;
+    QString dataPath,
+            imageExtension;
 
 
 public:
@@ -31,9 +32,11 @@ public:
 
     void setDataPath(const QString & path) { dataPath = path; }
     void scanPath();
-    void randQuest(Question & q);
-    void nextQuest(Question & q);
+    bool questNumber(int number, Question & q);
+    bool randQuest(Question & q);
+    bool nextQuest(Question & q);
 
 };
 
+std::ifstream& GotoLine(std::ifstream& file, unsigned int num);
 #endif // DATALOADER_H

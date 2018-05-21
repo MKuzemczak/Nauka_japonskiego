@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
+#include "dataloader.h"
 #include "scribblearea.h"
 
 class GUI : public QWidget
@@ -39,6 +40,12 @@ class GUI : public QWidget
 
     ScribbleArea *scribbleArea;
     ScribbleArea *scribbleArea1;
+
+    DataLoader loader;
+
+    Question question;
+
+    void arrangeGUI();
 
 public:
     explicit GUI(QWidget *parent = nullptr);
