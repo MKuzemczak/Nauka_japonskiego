@@ -9,9 +9,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 SOURCES += \
     main.cpp \
     gui.cpp \
-    scribblearea.cpp
+    scribblearea.cpp \
+    dataloader.cpp
 
 HEADERS += \
     gui.h \
-    scribblearea.h
+    scribblearea.h \
+    dataloader.h
 

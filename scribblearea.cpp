@@ -28,6 +28,7 @@ ScribbleArea::ScribbleArea(QWidget *parent)
     connect(rubber, SIGNAL(pressed()), this, SLOT(setRubber()));
 
     openImage("C:/Qt/Projects/Nauka_japonskiego/Data/blank_100x100.jpg");
+
 }
 
 bool ScribbleArea::openImage(const QString &fileName)

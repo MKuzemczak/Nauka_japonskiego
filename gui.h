@@ -38,6 +38,7 @@ class GUI : public QWidget
               *kanjiGroup();
 
     ScribbleArea *scribbleArea;
+    ScribbleArea *scribbleArea1;
 
 public:
     explicit GUI(QWidget *parent = nullptr);
@@ -48,6 +49,8 @@ protected:
 signals:
 
 public slots:
+    void nextQuestion();
+    void randomQuestion();
 };
 
 #endif // GUI_H

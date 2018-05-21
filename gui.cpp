@@ -9,6 +9,8 @@ GUI::GUI(QWidget *parent) : QWidget(parent)
 
     scribbleArea = new ScribbleArea(this);
     scribbleArea->setGeometry(0,0, 100, 100);
+    scribbleArea1 = new ScribbleArea(this);
+    scribbleArea1->setGeometry(100,100, 100, 100);
 
 
 }
