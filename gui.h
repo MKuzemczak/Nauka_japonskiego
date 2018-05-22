@@ -25,30 +25,47 @@ class GUI : public QWidget
            *hiraganaImage,
            *kanjiImage;
 
+    ScribbleArea *katakanaScribble,
+                 *hiraganaScribble,
+                 *kanjiScribble;
+
     QLineEdit *englishAnswer,
               *romajiAnswer;
+
+    QLabel *englishAnswerLabel,
+           *romajiAnswerLabel,
+           *katakanaScribbleLabel,
+           *hiraganaScribbleLabel,
+           *kanjiScribbleLabel;
 
     QPixmap *katakanaPix,
             *hiraganaPix,
             *kanjiPix;
 
-    QGroupBox *englishGroup(),
-              *romajiGroup(),
-              *katakanaGroup(),
-              *hiraganaGroup(),
-              *kanjiGroup();
+    QGroupBox *englishGroup,
+              *romajiGroup,
+              *katakanaGroup,
+              *hiraganaGroup,
+              *kanjiGroup;
 
-    ScribbleArea *scribbleArea;
-    ScribbleArea *scribbleArea1;
+
 
     DataLoader loader;
 
     Question question;
 
     void arrangeGUI();
+    QGroupBox * arrangeEnglishGroup();
+    QGroupBox * arrangeRomajiGroup();
+    QGroupBox * arrangeKatakanaGroup();
+    QGroupBox * arrangeHiraganaGroup();
+    QGroupBox * arrangeKanjiGroup();
 
 public:
     explicit GUI(QWidget *parent = nullptr);
+
+    void showQuestion();
+    void showAnswers();
 
 protected:
     void keyPressEvent(QKeyEvent *e);
@@ -58,6 +75,7 @@ signals:
 public slots:
     void nextQuestion();
     void randomQuestion();
+    void clear();
 };
 
 #endif // GUI_H

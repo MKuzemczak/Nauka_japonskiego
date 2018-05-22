@@ -22,7 +22,7 @@ class ScribbleArea : public QWidget
     bool scribbling;
     int myPenWidth;
 
-    QPushButton *pen, *rubber;
+    QPushButton *pen, *rubber, *clear;
     QButtonGroup *brushSelect;
 
 

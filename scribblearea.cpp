@@ -10,12 +10,15 @@ ScribbleArea::ScribbleArea(QWidget *parent)
 
     pen = new QPushButton("Pen", this);
     rubber = new QPushButton("Rubber", this);
+    clear = new QPushButton("Clear", this);
     pen->setCheckable(true);
     rubber->setCheckable(true);
 
     pen->setGeometry(0,0, 30, 25);
 
     rubber->setGeometry(pen->width(), pen->y(), 60, pen->height());
+
+    clear->setGeometry(rubber->x() + rubber->width(), pen->y(), 60, pen->height());
 
     brushSelect = new QButtonGroup(this);
 
@@ -26,8 +29,9 @@ ScribbleArea::ScribbleArea(QWidget *parent)
 
     connect(pen, SIGNAL(pressed()), this, SLOT(setPen()));
     connect(rubber, SIGNAL(pressed()), this, SLOT(setRubber()));
+    connect(clear, SIGNAL(pressed()), this, SLOT(clearImage()));
 
-    openImage("C:/Qt/Projects/Nauka_japonskiego/Data/blank_100x100.jpg");
+    openImage("C:/Qt/Projects/Nauka_japonskiego/Data/blank_200x100.jpg");
 
 }
 
