@@ -8,6 +8,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QDebug>
+#include <time.h>
 
 typedef struct question {
     QString englishWord,

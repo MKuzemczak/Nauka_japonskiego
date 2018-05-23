@@ -18,6 +18,7 @@
 
 #include "dataloader.h"
 #include "scribblearea.h"
+#include "answercounter.h"
 
 class GUI : public QWidget
 {
@@ -47,13 +48,18 @@ class GUI : public QWidget
               *kanjiGroup;
 
     QPushButton *nextButton,
-                *randomButton;
+                *randomButton,
+                *checkButton,
+                *correctButton,
+                *incorrectButton;
 
     QCheckBox *onlyEnglishQuestionMode;
 
     DataLoader loader;
 
     Question question;
+
+    AnswerCounter *answerCounter;
 
     //////////////////// font
     int fontId;
@@ -73,7 +79,7 @@ public:
     explicit GUI(QWidget *parent = nullptr);
 
     void showQuestion();
-    void showAnswers();
+
 
 protected:
     void keyPressEvent(QKeyEvent *e);
@@ -83,6 +89,7 @@ signals:
 public slots:
     void nextQuestion();
     void randomQuestion();
+    void showAnswers();
     void clear();
 };
 

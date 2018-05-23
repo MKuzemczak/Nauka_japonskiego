@@ -14,17 +14,24 @@ DataLoader::DataLoader()
 
 void DataLoader::scanPath()
 {
-    ifstream questAmountFile(dataPath.toUtf8().toStdString() + "amount.txt");
+    QFile wordsFile(dataPath + "words.txt");
 
-    if(questAmountFile.is_open())
-    {
-        questAmountFile >> questionAmount;
 
-        if(questionAmount == 0)
-            cout << "Warning! No questions.\n";
+    if(!wordsFile.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(0, "error", wordsFile.errorString());
     }
-    else
-        cout << "Unable to open amount.txt\n";
+
+
+    QTextStream in(&wordsFile);
+    int line = 0;
+
+    while(!in.atEnd())
+    {
+        in.readLine();
+        line++;
+    }
+
+    questionAmount = line;
 }
 
 bool DataLoader::questNumber(int number, Question & q)
@@ -40,33 +47,48 @@ bool DataLoader::questNumber(int number, Question & q)
         return false;
     }
 
+
     QTextStream in(&wordsFile);
     int line = 0;
+    QString s[5];
 
     while(!in.atEnd())
     {
         if(line == number)
         {
-            in >> q.englishWord;
-            in >> q.romajiWord;
-            in >> q.katakanaWord;
-            in >> q.hiraganaWord;
-            in >> q.kanjiWord;
+            for(int i = 0; i < 5; i++)
+                in >> s[i];
         }
         else
             in.readLine();
         line++;
     }
 
+    int lastQuestionAlphabet = q.questionAlphabet;
+
+    srand ( time(NULL) );
     q.questionAlphabet = rand() % 5;
+    while(q.questionAlphabet == lastQuestionAlphabet || s[q.questionAlphabet][0] == '-')
+        q.questionAlphabet = rand() % 5;
+
+    q.englishWord = s[0];
+    q.romajiWord = s[1];
+    q.katakanaWord = s[2];
+    q.hiraganaWord = s[3];
+    q.kanjiWord = s[4];
 
     return true;
 }
 
 bool DataLoader::randQuest(Question & q)
 {
+    int lastQuestion = currentQuestion;
+    srand ( time(NULL) );
     currentQuestion = rand() % questionAmount;
+    while(currentQuestion == lastQuestion)
+        currentQuestion = rand() % questionAmount;
 
+    qDebug() << "current: " << currentQuestion;
     return questNumber(currentQuestion, q);
 }
 

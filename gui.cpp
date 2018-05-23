@@ -17,6 +17,10 @@ GUI::GUI(QWidget *parent) : QWidget(parent)
     fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
     rounded_mgenplus_light = QFont(fontFamily, 30);
 
+    loader.setDataPath("C:/Qt/Projects/Nauka_japonskiego/Data/");
+    loader.scanPath();
+
+
     arrangeGUI();
 
 }
@@ -32,12 +36,15 @@ void GUI::keyPressEvent(QKeyEvent *e)
 void GUI::nextQuestion()
 {
     loader.nextQuest(question);
+    clear();
     showQuestion();
 }
 void GUI::randomQuestion()
 {
     loader.randQuest(question);
+    clear();
     showQuestion();
+    qDebug()<< "alphabet: " << question.questionAlphabet;
 }
 
 void GUI::showQuestion()
@@ -79,6 +86,13 @@ void GUI::clear()
     katakanaWordLabel->setText("");
     hiraganaWordLabel->setText("");
     kanjiWordLabel->setText("");
+
+    katakanaScribble->clearImage();
+    hiraganaScribble->clearImage();
+    kanjiScribble->clearImage();
+
+    englishAnswer->setText("");
+    romajiAnswer->setText("");
 }
 
 
@@ -92,11 +106,19 @@ void GUI::arrangeGUI()
 
     nextButton = new QPushButton("Next question");
     randomButton = new QPushButton("Random question");
+    checkButton = new QPushButton("Show answers");
     nextButton->setFixedHeight(50);
     randomButton->setFixedHeight(50);
+    checkButton->setFixedHeight(50);
 
+    connect(nextButton, SIGNAL(pressed()), this, SLOT(nextQuestion()));
+    connect(randomButton, SIGNAL(pressed()), this, SLOT(randomQuestion()));
+    connect(checkButton, SIGNAL(pressed()), this, SLOT(showAnswers()));
 
-    layout->addWidget(headline, 0, 0, 3, -1);
+    answerCounter = new AnswerCounter;
+
+    layout->addWidget(headline, 0, 0, 3, 20);
+    layout->addWidget(answerCounter, 0, 21, 3, -1);
 
     layout->addWidget(arrangeEnglishGroup(), 4, 0, 10, 5);
     layout->addWidget(arrangeRomajiGroup(), 4, 5, 10, 5);
@@ -104,8 +126,9 @@ void GUI::arrangeGUI()
     layout->addWidget(arrangeHiraganaGroup(), 4, 15, 10, 5);
     layout->addWidget(arrangeKanjiGroup(), 4, 20, 10, 5);
 
-    layout->addWidget(nextButton, 15, 8, 2, 4);
-    layout->addWidget(randomButton, 15, 13, 2, 4);
+    layout->addWidget(nextButton, 15, 7, 2, 4);
+    layout->addWidget(randomButton, 15, 11, 2, 4);
+    layout->addWidget(checkButton, 15, 15, 2, 4);
 
     setLayout(layout);
 }
