@@ -17,6 +17,7 @@
 #include <QCheckBox>
 #include <QButtonGroup>
 #include <QRadioButton>
+#include <QDir>
 
 #include "dataloader.h"
 #include "scribblearea.h"

@@ -10,6 +10,7 @@
 #include <QSize>
 #include <QPushButton>
 #include <QButtonGroup>
+#include <QDir>
 
 
 class ScribbleArea : public QWidget

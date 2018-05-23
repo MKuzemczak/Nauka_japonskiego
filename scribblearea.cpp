@@ -31,7 +31,7 @@ ScribbleArea::ScribbleArea(QWidget *parent)
     connect(rubber, SIGNAL(pressed()), this, SLOT(setRubber()));
     connect(clear, SIGNAL(pressed()), this, SLOT(clearImage()));
 
-    openImage("C:/Qt/Projects/Nauka_japonskiego/Data/blank_200x100.jpg");
+    openImage(QDir::currentPath() + "/Data/blank_200x100.jpg");
 
 }
 

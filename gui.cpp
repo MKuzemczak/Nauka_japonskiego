@@ -4,20 +4,13 @@ GUI::GUI(QWidget *parent) : QWidget(parent)
 {
     setFixedSize(1200,600);
 
-    //katakanaImage = new QLabel(this);
-    //katakanaImage->setGeometry(0,0, 100, 100);
 
-    /*scribbleArea = new ScribbleArea(this);
-    scribbleArea->setGeometry(0,0, 100, 100);
-    scribbleArea1 = new ScribbleArea(this);
-    scribbleArea1->setGeometry(100,100, 100, 100);*/
-
-    fontId = QFontDatabase::addApplicationFont(
-                "C:/Qt/Projects/Nauka_japonskiego/Data/rounded-mgenplus-20140828/rounded-mgenplus-1c-light.ttf");
+    fontId = QFontDatabase::addApplicationFont(QDir::currentPath() +
+                "/Data/rounded-mgenplus-20140828/rounded-mgenplus-1c-light.ttf");
     fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
     rounded_mgenplus_light = QFont(fontFamily, 30);
 
-    loader.setDataPath("C:/Qt/Projects/Nauka_japonskiego/Data/");
+    loader.setDataPath(QDir::currentPath() + "/Data/");
     loader.scanPath();
 
     arrangeGUI();
@@ -161,8 +154,9 @@ QGroupBox * GUI::arrangeEnglishGroup()
     englishGroup = new QGroupBox("English");
 
     englishWordLabel = new QLabel("");
+    englishWordLabel->setFixedSize(100,100);
     englishWordLabel->setStyleSheet("font: 20pt;");
-    englishAnswerLabel = new QLabel("Your answer:");
+    englishAnswerLabel = new QLabel("Your answer");
     englishAnswer = new QLineEdit();
 
     questionLayout->addWidget(englishWordLabel);
@@ -173,9 +167,10 @@ QGroupBox * GUI::arrangeEnglishGroup()
     vbox->addWidget(englishAnswer);
     vbox->addWidget(new QLabel(""));
 
-    vbox->setStretch(0, 6);
-    vbox->setStretch(3, 2);
-    //vbox->addStretch(1);
+    //vbox->setStretch(0, 6);
+    //vbox->setStretch(3, 2);
+
+    vbox->addStretch(1);
 
     englishGroup->setLayout(vbox);
 
@@ -192,9 +187,10 @@ QGroupBox * GUI::arrangeRomajiGroup()
 
 
     romajiWordLabel = new QLabel("");
+    romajiWordLabel->setFixedSize(100,100);
     romajiWordLabel->setStyleSheet("font: 20pt;");
 
-    romajiAnswerLabel = new QLabel("Your answer:");
+    romajiAnswerLabel = new QLabel("Your answer");
     romajiAnswer = new QLineEdit();
 
     questionLayout->addWidget(romajiWordLabel);
@@ -205,8 +201,10 @@ QGroupBox * GUI::arrangeRomajiGroup()
     vbox->addWidget(romajiAnswer);
     vbox->addWidget(new QLabel(""));
 
-    vbox->setStretch(0, 6);
-    vbox->setStretch(3, 2);
+    //vbox->setStretch(0, 6);
+    //vbox->setStretch(3, 2);
+
+    vbox->addStretch(1);
 
     romajiGroup->setLayout(vbox);
 
