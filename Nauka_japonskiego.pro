@@ -10,10 +10,12 @@ SOURCES += \
     main.cpp \
     gui.cpp \
     scribblearea.cpp \
-    dataloader.cpp
+    dataloader.cpp \
+    answercounter.cpp
 
 HEADERS += \
     gui.h \
     scribblearea.h \
-    dataloader.h
+    dataloader.h \
+    answercounter.h
 

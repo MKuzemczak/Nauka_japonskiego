@@ -10,6 +10,11 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGridLayout>
+#include <QFont>
+#include <QFontDatabase>
+#include <QDebug>
+#include <QCheckBox>
 
 #include "dataloader.h"
 #include "scribblearea.h"
@@ -21,9 +26,9 @@ class GUI : public QWidget
     QLabel *headline,
            *englishWordLabel,
            *romajiWordLabel,
-           *katakanaImage,
-           *hiraganaImage,
-           *kanjiImage;
+           *katakanaWordLabel,
+           *hiraganaWordLabel,
+           *kanjiWordLabel;
 
     ScribbleArea *katakanaScribble,
                  *hiraganaScribble,
@@ -33,14 +38,7 @@ class GUI : public QWidget
               *romajiAnswer;
 
     QLabel *englishAnswerLabel,
-           *romajiAnswerLabel,
-           *katakanaScribbleLabel,
-           *hiraganaScribbleLabel,
-           *kanjiScribbleLabel;
-
-    QPixmap *katakanaPix,
-            *hiraganaPix,
-            *kanjiPix;
+           *romajiAnswerLabel;
 
     QGroupBox *englishGroup,
               *romajiGroup,
@@ -48,11 +46,19 @@ class GUI : public QWidget
               *hiraganaGroup,
               *kanjiGroup;
 
+    QPushButton *nextButton,
+                *randomButton;
 
+    QCheckBox *onlyEnglishQuestionMode;
 
     DataLoader loader;
 
     Question question;
+
+    //////////////////// font
+    int fontId;
+    QString fontFamily;
+    QFont rounded_mgenplus_light;
 
     void arrangeGUI();
     QGroupBox * arrangeEnglishGroup();
@@ -60,6 +66,8 @@ class GUI : public QWidget
     QGroupBox * arrangeKatakanaGroup();
     QGroupBox * arrangeHiraganaGroup();
     QGroupBox * arrangeKanjiGroup();
+
+
 
 public:
     explicit GUI(QWidget *parent = nullptr);

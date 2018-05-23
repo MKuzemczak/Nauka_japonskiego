@@ -5,14 +5,16 @@
 #include <fstream>
 #include <QString>
 #include <QPixmap>
+#include <QFile>
+#include <QTextStream>
+#include <QMessageBox>
 
 typedef struct question {
-    QPixmap katakanaPix,
-            hiraganaPix,
-            kanjiPix;
-
     QString englishWord,
-            romajiWord;
+            romajiWord,
+            katakanaWord,
+            hiraganaWord,
+            kanjiWord;
 
     int questionAlphabet;
 

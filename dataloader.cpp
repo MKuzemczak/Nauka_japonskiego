@@ -32,30 +32,31 @@ bool DataLoader::questNumber(int number, Question & q)
     if(number > questionAmount || number < 0)
         return false;
 
-    ifstream englishFile(dataPath.toUtf8().toStdString() + "english.txt");
-    ifstream romajiFile(dataPath.toUtf8().toStdString() + "romaji.txt");
+    QFile wordsFile(dataPath + "words.txt");
 
-    if(!englishFile.is_open() || !romajiFile.is_open())
+
+    if(!wordsFile.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(0, "error", wordsFile.errorString());
         return false;
+    }
 
-    GotoLine(englishFile, (unsigned int)number);
-    GotoLine(romajiFile, (unsigned int)number);
+    QTextStream in(&wordsFile);
+    int line = 0;
 
-    string s;
-
-    englishFile >> s;
-
-    q.englishWord = QString::fromStdString(s);
-
-    s = "";
-
-    romajiFile >> s;
-
-    q.romajiWord = QString::fromStdString(s);
-
-    q.katakanaPix.load(dataPath + "katakana_" + QString::number(number) + imageExtension);
-    q.hiraganaPix.load(dataPath + "hiragana_" + QString::number(number) + imageExtension);
-    q.kanjiPix.load(dataPath + "kanji_" + QString::number(number) + imageExtension);
+    while(!in.atEnd())
+    {
+        if(line == number)
+        {
+            in >> q.englishWord;
+            in >> q.romajiWord;
+            in >> q.katakanaWord;
+            in >> q.hiraganaWord;
+            in >> q.kanjiWord;
+        }
+        else
+            in.readLine();
+        line++;
+    }
 
     q.questionAlphabet = rand() % 5;
 

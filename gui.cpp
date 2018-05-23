@@ -2,15 +2,20 @@
 
 GUI::GUI(QWidget *parent) : QWidget(parent)
 {
-    setFixedSize(1200,400);
+    setFixedSize(1200,600);
 
-    katakanaImage = new QLabel(this);
-    katakanaImage->setGeometry(0,0, 100, 100);
+    //katakanaImage = new QLabel(this);
+    //katakanaImage->setGeometry(0,0, 100, 100);
 
     /*scribbleArea = new ScribbleArea(this);
     scribbleArea->setGeometry(0,0, 100, 100);
     scribbleArea1 = new ScribbleArea(this);
     scribbleArea1->setGeometry(100,100, 100, 100);*/
+
+    fontId = QFontDatabase::addApplicationFont(
+                "C:/Qt/Projects/Nauka_japonskiego/Data/rounded-mgenplus-20140828/rounded-mgenplus-1c-light.ttf");
+    fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
+    rounded_mgenplus_light = QFont(fontFamily, 30);
 
     arrangeGUI();
 
@@ -46,22 +51,13 @@ void GUI::showQuestion()
         romajiWordLabel->setText(question.romajiWord);
         break;
     case 2:
-        katakanaImage->setPixmap(question.katakanaPix.
-                                 scaled(katakanaImage->width(),
-                                        katakanaImage->height(),
-                                        Qt::KeepAspectRatio));
+        katakanaWordLabel->setText(question.katakanaWord);
         break;
     case 3:
-        hiraganaImage->setPixmap(question.hiraganaPix.
-                                 scaled(hiraganaImage->width(),
-                                        hiraganaImage->height(),
-                                        Qt::KeepAspectRatio));
+        hiraganaWordLabel->setText(question.hiraganaWord);
         break;
     case 4:
-        kanjiImage->setPixmap(question.kanjiPix.
-                                 scaled(kanjiImage->width(),
-                                        kanjiImage->height(),
-                                        Qt::KeepAspectRatio));
+        kanjiWordLabel->setText(question.kanjiWord);
         break;
     }
 }
@@ -69,24 +65,47 @@ void GUI::showQuestion()
 
 void GUI::showAnswers()
 {
-
+    englishWordLabel->setText(question.englishWord);
+    romajiWordLabel->setText(question.romajiWord);
+    katakanaWordLabel->setText(question.katakanaWord);
+    hiraganaWordLabel->setText(question.hiraganaWord);
+    kanjiWordLabel->setText(question.kanjiWord);
 }
 
 void GUI::clear()
 {
-
+    englishWordLabel->setText("");
+    romajiWordLabel->setText("");
+    katakanaWordLabel->setText("");
+    hiraganaWordLabel->setText("");
+    kanjiWordLabel->setText("");
 }
 
 
 void GUI::arrangeGUI()
 {
-    QHBoxLayout *layout = new QHBoxLayout;
 
-    layout->addWidget(arrangeEnglishGroup());
-    layout->addWidget(arrangeRomajiGroup());
-    layout->addWidget(arrangeKatakanaGroup());
-    layout->addWidget(arrangeHiraganaGroup());
-    layout->addWidget(arrangeKanjiGroup());
+    QGridLayout *layout = new QGridLayout;
+
+    headline = new QLabel("Japanese learning v0.1");
+    headline->setStyleSheet("font: 40pt;");
+
+    nextButton = new QPushButton("Next question");
+    randomButton = new QPushButton("Random question");
+    nextButton->setFixedHeight(50);
+    randomButton->setFixedHeight(50);
+
+
+    layout->addWidget(headline, 0, 0, 3, -1);
+
+    layout->addWidget(arrangeEnglishGroup(), 4, 0, 10, 5);
+    layout->addWidget(arrangeRomajiGroup(), 4, 5, 10, 5);
+    layout->addWidget(arrangeKatakanaGroup(), 4, 10, 10, 5);
+    layout->addWidget(arrangeHiraganaGroup(), 4, 15, 10, 5);
+    layout->addWidget(arrangeKanjiGroup(), 4, 20, 10, 5);
+
+    layout->addWidget(nextButton, 15, 8, 2, 4);
+    layout->addWidget(randomButton, 15, 13, 2, 4);
 
     setLayout(layout);
 }
@@ -133,6 +152,7 @@ QGroupBox * GUI::arrangeRomajiGroup()
 
     romajiWordLabel = new QLabel("");
     romajiWordLabel->setStyleSheet("font: 20pt;");
+
     romajiAnswerLabel = new QLabel("Your answer:");
     romajiAnswer = new QLineEdit();
 
@@ -146,7 +166,6 @@ QGroupBox * GUI::arrangeRomajiGroup()
 
     vbox->setStretch(0, 6);
     vbox->setStretch(3, 2);
-    //vbox->addStretch(1);
 
     romajiGroup->setLayout(vbox);
 
@@ -165,13 +184,14 @@ QGroupBox * GUI::arrangeKatakanaGroup()
     QVBoxLayout *scribbleLayout = new QVBoxLayout;
 
 
-    katakanaImage = new QLabel();
-    katakanaImage->setFixedSize(100,100);
+    katakanaWordLabel = new QLabel("");
+    katakanaWordLabel->setFixedSize(100,100);
+    katakanaWordLabel->setFont(rounded_mgenplus_light);
 
     katakanaScribble = new ScribbleArea();
     katakanaScribble->setFixedSize(200,100);
 
-    questionLayout->addWidget(katakanaImage);
+    questionLayout->addWidget(katakanaWordLabel);
     question->setLayout(questionLayout);
 
     scribbleLayout->addWidget(katakanaScribble);
@@ -180,7 +200,6 @@ QGroupBox * GUI::arrangeKatakanaGroup()
     vbox->addWidget(question);
     vbox->addWidget(scribble);
 
-    //vbox->setStretch(0, 6);
     vbox->addStretch(1);
 
     katakanaGroup->setLayout(vbox);
@@ -200,13 +219,14 @@ QGroupBox * GUI::arrangeHiraganaGroup()
     QVBoxLayout *scribbleLayout = new QVBoxLayout;
 
 
-    hiraganaImage = new QLabel();
-    hiraganaImage->setFixedSize(100,100);
+    hiraganaWordLabel = new QLabel("");
+    hiraganaWordLabel->setFixedSize(100,100);
+    hiraganaWordLabel->setFont(rounded_mgenplus_light);
 
     hiraganaScribble = new ScribbleArea();
     hiraganaScribble->setFixedSize(200,100);
 
-    questionLayout->addWidget(hiraganaImage);
+    questionLayout->addWidget(hiraganaWordLabel);
     question->setLayout(questionLayout);
 
     scribbleLayout->addWidget(hiraganaScribble);
@@ -215,7 +235,6 @@ QGroupBox * GUI::arrangeHiraganaGroup()
     vbox->addWidget(question);
     vbox->addWidget(scribble);
 
-    //vbox->setStretch(0, 6);
     vbox->addStretch(1);
 
     hiraganaGroup->setLayout(vbox);
@@ -234,13 +253,14 @@ QGroupBox * GUI::arrangeKanjiGroup()
     QVBoxLayout *scribbleLayout = new QVBoxLayout;
 
 
-    kanjiImage = new QLabel();
-    kanjiImage->setFixedSize(100,100);
+    kanjiWordLabel = new QLabel("");
+    kanjiWordLabel->setFixedSize(100,100);
+    kanjiWordLabel->setFont(rounded_mgenplus_light);
 
     kanjiScribble = new ScribbleArea();
     kanjiScribble->setFixedSize(200,100);
 
-    questionLayout->addWidget(kanjiImage);
+    questionLayout->addWidget(kanjiWordLabel);
     question->setLayout(questionLayout);
 
     scribbleLayout->addWidget(kanjiScribble);
@@ -249,7 +269,6 @@ QGroupBox * GUI::arrangeKanjiGroup()
     vbox->addWidget(question);
     vbox->addWidget(scribble);
 
-    //vbox->setStretch(0, 6);
     vbox->addStretch(1);
 
     kanjiGroup->setLayout(vbox);
