@@ -13,7 +13,7 @@ class AnswerCounter : public QLabel
 public:
     AnswerCounter(QWidget *parent = 0);
 
-    void increaseCorrectAnswers();
+    void increaseCorrectAnswers(double c);
     void increaseAnswers();
     void updateRatio();
 };

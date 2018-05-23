@@ -20,7 +20,6 @@ GUI::GUI(QWidget *parent) : QWidget(parent)
     loader.setDataPath("C:/Qt/Projects/Nauka_japonskiego/Data/");
     loader.scanPath();
 
-
     arrangeGUI();
 
 }
@@ -77,6 +76,12 @@ void GUI::showAnswers()
     katakanaWordLabel->setText(question.katakanaWord);
     hiraganaWordLabel->setText(question.hiraganaWord);
     kanjiWordLabel->setText(question.kanjiWord);
+
+    nextButton->hide();
+    randomButton->hide();
+    checkButton->hide();
+
+    radioGroup->show();
 }
 
 void GUI::clear()
@@ -95,6 +100,16 @@ void GUI::clear()
     romajiAnswer->setText("");
 }
 
+void GUI::correctAnswersAmountOkPressed()
+{
+    answerCounter->increaseCorrectAnswers(correctAnswersAmountButtonGroup->checkedId()/4);
+
+    nextButton->show();
+    randomButton->show();
+    checkButton->show();
+
+    radioGroup->hide();
+}
 
 void GUI::arrangeGUI()
 {
@@ -129,6 +144,9 @@ void GUI::arrangeGUI()
     layout->addWidget(nextButton, 15, 7, 2, 4);
     layout->addWidget(randomButton, 15, 11, 2, 4);
     layout->addWidget(checkButton, 15, 15, 2, 4);
+
+    layout->addWidget(arrangeRadioGroup(), 15, 7, -1, 12);
+    radioGroup->hide();
 
     setLayout(layout);
 }
@@ -297,4 +315,33 @@ QGroupBox * GUI::arrangeKanjiGroup()
     kanjiGroup->setLayout(vbox);
 
     return kanjiGroup;
+}
+
+QGroupBox * GUI::arrangeRadioGroup()
+{
+    radioGroup = new QGroupBox("How many correct answers?");
+    correctAnswersAmountButtonGroup = new QButtonGroup;
+
+    QRadioButton *a[5];
+    QHBoxLayout * radioLayout = new QHBoxLayout;
+
+
+    for(int i = 0; i < 5; i++)
+    {
+        a[i] = new QRadioButton(QString::number(i));
+        correctAnswersAmountButtonGroup->addButton(a[i]);
+        correctAnswersAmountButtonGroup->setId(a[i], i);
+        radioLayout->addWidget(a[i]);
+    }
+    a[4]->setChecked(true);
+
+    okButton = new QPushButton("OK");
+    okButton->setFixedSize(100,50);
+    connect(okButton, SIGNAL(pressed()), this, SLOT(correctAnswersAmountOkPressed()));
+
+    radioLayout->addWidget(okButton);
+
+    radioGroup->setLayout(radioLayout);
+
+    return radioGroup;
 }

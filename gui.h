@@ -15,6 +15,8 @@
 #include <QFontDatabase>
 #include <QDebug>
 #include <QCheckBox>
+#include <QButtonGroup>
+#include <QRadioButton>
 
 #include "dataloader.h"
 #include "scribblearea.h"
@@ -45,13 +47,15 @@ class GUI : public QWidget
               *romajiGroup,
               *katakanaGroup,
               *hiraganaGroup,
-              *kanjiGroup;
+              *kanjiGroup,
+              *radioGroup;
 
     QPushButton *nextButton,
                 *randomButton,
                 *checkButton,
-                *correctButton,
-                *incorrectButton;
+                *okButton;
+
+    QButtonGroup *correctAnswersAmountButtonGroup;
 
     QCheckBox *onlyEnglishQuestionMode;
 
@@ -72,6 +76,7 @@ class GUI : public QWidget
     QGroupBox * arrangeKatakanaGroup();
     QGroupBox * arrangeHiraganaGroup();
     QGroupBox * arrangeKanjiGroup();
+    QGroupBox * arrangeRadioGroup();
 
 
 
@@ -90,6 +95,7 @@ public slots:
     void nextQuestion();
     void randomQuestion();
     void showAnswers();
+    void correctAnswersAmountOkPressed();
     void clear();
 };
 

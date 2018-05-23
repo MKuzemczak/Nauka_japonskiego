@@ -12,9 +12,9 @@ AnswerCounter::AnswerCounter(QWidget *parent)
 }
 
 
-void AnswerCounter::increaseCorrectAnswers()
+void AnswerCounter::increaseCorrectAnswers(double c)
 {
-    correctAnswers += 1;
+    correctAnswers += c;
     answersTotally += 1;
     updateRatio();
 }
@@ -28,5 +28,5 @@ void AnswerCounter::increaseAnswers()
 void AnswerCounter::updateRatio()
 {
     ratio = correctAnswers/answersTotally;
-    setText(QString("%1").arg(ratio, 0, 'g', 2));
+    setText(QString("%1").arg(ratio*100, 0, 'g', 4)+"%");
 }
