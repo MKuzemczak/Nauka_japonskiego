@@ -10,13 +10,20 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <time.h>
+#include <random>
+
+#include "randutils.hpp"
+#include "alphabetamount.h"
+
+//thread_local std::mt19937 gen{std::random_device{}()};
+
+/*template<typename T>
+T random(T min, T max) {
+    return std::uniform_int_distribution<T>{min, max}(gen);
+}*/
 
 typedef struct question {
-    QString englishWord,
-            romajiWord,
-            katakanaWord,
-            hiraganaWord,
-            kanjiWord;
+    QString words[ALPHA_AMOUNT];
 
     int questionAlphabet;
 
@@ -30,6 +37,8 @@ class DataLoader
     QString dataPath,
             imageExtension;
 
+    randutils::mt19937_rng random;
+
 
 public:
     DataLoader();
@@ -39,6 +48,7 @@ public:
     bool questNumber(int number, Question & q);
     bool randQuest(Question & q);
     bool nextQuest(Question & q);
+    bool prevQuest(Question & q);
 
 };
 

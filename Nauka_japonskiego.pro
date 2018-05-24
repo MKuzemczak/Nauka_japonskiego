@@ -17,5 +17,7 @@ HEADERS += \
     gui.h \
     scribblearea.h \
     dataloader.h \
-    answercounter.h
+    answercounter.h \
+    randutils.hpp \
+    alphabetamount.h
 

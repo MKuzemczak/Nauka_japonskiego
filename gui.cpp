@@ -1,8 +1,9 @@
 #include "gui.h"
 
+
 GUI::GUI(QWidget *parent) : QWidget(parent)
 {
-    setFixedSize(1200,600);
+    setFixedSize(1250,600);
 
 
     fontId = QFontDatabase::addApplicationFont(QDir::currentPath() +
@@ -28,12 +29,41 @@ void GUI::keyPressEvent(QKeyEvent *e)
 void GUI::nextQuestion()
 {
     loader.nextQuest(question);
+    if(onlyEnglishQuestionMode->isChecked())
+    {
+        while(question.words[ENG][0] == '-')
+            loader.nextQuest(question);
+
+        question.questionAlphabet = ENG;
+    }
     clear();
     showQuestion();
 }
+
+void GUI::previousQuestion()
+{
+    loader.prevQuest(question);
+    if(onlyEnglishQuestionMode->isChecked())
+    {
+        while(question.words[ENG][0] == '-')
+            loader.prevQuest(question);
+
+        question.questionAlphabet = ENG;
+    }
+    clear();
+    showQuestion();
+}
+
 void GUI::randomQuestion()
 {
     loader.randQuest(question);
+    if(onlyEnglishQuestionMode->isChecked())
+    {
+        while(question.words[ENG][0] == '-')
+            loader.randQuest(question);
+
+        question.questionAlphabet = ENG;
+    }
     clear();
     showQuestion();
     qDebug()<< "alphabet: " << question.questionAlphabet;
@@ -41,34 +71,15 @@ void GUI::randomQuestion()
 
 void GUI::showQuestion()
 {
-    switch(question.questionAlphabet)
-    {
-    case 0:
-        englishWordLabel->setText(question.englishWord);
-        break;
-    case 1:
-        romajiWordLabel->setText(question.romajiWord);
-        break;
-    case 2:
-        katakanaWordLabel->setText(question.katakanaWord);
-        break;
-    case 3:
-        hiraganaWordLabel->setText(question.hiraganaWord);
-        break;
-    case 4:
-        kanjiWordLabel->setText(question.kanjiWord);
-        break;
-    }
+    wordLabels[question.questionAlphabet]->
+            setText(question.words[question.questionAlphabet]);
 }
 
 
 void GUI::showAnswers()
 {
-    englishWordLabel->setText(question.englishWord);
-    romajiWordLabel->setText(question.romajiWord);
-    katakanaWordLabel->setText(question.katakanaWord);
-    hiraganaWordLabel->setText(question.hiraganaWord);
-    kanjiWordLabel->setText(question.kanjiWord);
+    for(int i = 0; i < ALPHA_AMOUNT; i++)
+        wordLabels[i]->setText(question.words[i]);
 
     nextButton->hide();
     randomButton->hide();
@@ -79,23 +90,19 @@ void GUI::showAnswers()
 
 void GUI::clear()
 {
-    englishWordLabel->setText("");
-    romajiWordLabel->setText("");
-    katakanaWordLabel->setText("");
-    hiraganaWordLabel->setText("");
-    kanjiWordLabel->setText("");
+    for(int i = 0; i < ALPHA_AMOUNT; i++)
+        wordLabels[i]->setText("");
 
-    katakanaScribble->clearImage();
-    hiraganaScribble->clearImage();
-    kanjiScribble->clearImage();
+    for(int i = 0; i < JAP_ALPH_AMOUNT; i++)
+        scribbles[i]->clearImage();
 
-    englishAnswer->setText("");
-    romajiAnswer->setText("");
+    for(int i = 0; i < LAT_ALPH_AMOUNT; i++)
+        latinAnswers[i]->setText("");
 }
 
 void GUI::correctAnswersAmountOkPressed()
 {
-    answerCounter->increaseCorrectAnswers(correctAnswersAmountButtonGroup->checkedId()/4);
+    answerCounter->increaseCorrectAnswers((double)correctAnswersAmountButtonGroup->checkedId()/4);
 
     nextButton->show();
     randomButton->show();
@@ -109,17 +116,20 @@ void GUI::arrangeGUI()
 
     QGridLayout *layout = new QGridLayout;
 
-    headline = new QLabel("Japanese learning v0.1");
+    headline = new QLabel("Learning japenese v0.1");
     headline->setStyleSheet("font: 40pt;");
 
     nextButton = new QPushButton("Next question");
+    previousButton = new QPushButton("Previous question");
     randomButton = new QPushButton("Random question");
     checkButton = new QPushButton("Show answers");
     nextButton->setFixedHeight(50);
+    previousButton->setFixedHeight(50);
     randomButton->setFixedHeight(50);
     checkButton->setFixedHeight(50);
 
     connect(nextButton, SIGNAL(pressed()), this, SLOT(nextQuestion()));
+    connect(previousButton, SIGNAL(pressed()), this, SLOT(previousQuestion()));
     connect(randomButton, SIGNAL(pressed()), this, SLOT(randomQuestion()));
     connect(checkButton, SIGNAL(pressed()), this, SLOT(showAnswers()));
 
@@ -128,192 +138,44 @@ void GUI::arrangeGUI()
     layout->addWidget(headline, 0, 0, 3, 20);
     layout->addWidget(answerCounter, 0, 21, 3, -1);
 
-    layout->addWidget(arrangeEnglishGroup(), 4, 0, 10, 5);
-    layout->addWidget(arrangeRomajiGroup(), 4, 5, 10, 5);
-    layout->addWidget(arrangeKatakanaGroup(), 4, 10, 10, 5);
-    layout->addWidget(arrangeHiraganaGroup(), 4, 15, 10, 5);
-    layout->addWidget(arrangeKanjiGroup(), 4, 20, 10, 5);
+    layout->addWidget(arrangeLatinGroup(&wordLabels[ENG],
+                                        &latinAnswers[LAT_ENG],
+                                        "English"),
+                      4, 0, 10, 5);
+    layout->addWidget(arrangeLatinGroup(&wordLabels[ROMAJI],
+                                        &latinAnswers[LAT_ROMAJI],
+                                        "Romaji"),
+                      4, 5, 10, 5);
+    layout->addWidget(arrangeJapaneseGroup(&wordLabels[KATA],
+                                           &scribbles[JAP_KATA],
+                                           "Katakana"),
+                      4, 10, 10, 5);
+    layout->addWidget(arrangeJapaneseGroup(&wordLabels[HIRA],
+                                           &scribbles[JAP_HIRA],
+                                           "Hiragana"),
+                      4, 15, 10, 5);
+    layout->addWidget(arrangeJapaneseGroup(&wordLabels[KANJI],
+                                           &scribbles[JAP_KANJI],
+                                           "Kanji"),
+                      4, 20, 10, 5);
 
-    layout->addWidget(nextButton, 15, 7, 2, 4);
-    layout->addWidget(randomButton, 15, 11, 2, 4);
-    layout->addWidget(checkButton, 15, 15, 2, 4);
+    layout->addWidget(previousButton, 15, 5, 2, 4);
+    layout->addWidget(nextButton, 15, 9, 2, 4);
+    layout->addWidget(randomButton, 15, 13, 2, 4);
+    layout->addWidget(checkButton, 15, 17, 2, 4);
 
     layout->addWidget(arrangeRadioGroup(), 15, 7, -1, 12);
     radioGroup->hide();
 
     setLayout(layout);
+
+    onlyEnglishQuestionMode = new QCheckBox("Only english questions mode", this);
+    onlyEnglishQuestionMode->setChecked(false);
+    onlyEnglishQuestionMode->setFixedWidth(400);
+    onlyEnglishQuestionMode->move(20, 10);
 }
 
 
-QGroupBox * GUI::arrangeEnglishGroup()
-{
-    QVBoxLayout *vbox = new QVBoxLayout;
-    QGroupBox *question = new QGroupBox("Word");
-    QVBoxLayout *questionLayout = new QVBoxLayout;
-
-    englishGroup = new QGroupBox("English");
-
-    englishWordLabel = new QLabel("");
-    englishWordLabel->setFixedSize(100,100);
-    englishWordLabel->setStyleSheet("font: 20pt;");
-    englishAnswerLabel = new QLabel("Your answer");
-    englishAnswer = new QLineEdit();
-
-    questionLayout->addWidget(englishWordLabel);
-    question->setLayout(questionLayout);
-
-    vbox->addWidget(question);
-    vbox->addWidget(englishAnswerLabel);
-    vbox->addWidget(englishAnswer);
-    vbox->addWidget(new QLabel(""));
-
-    //vbox->setStretch(0, 6);
-    //vbox->setStretch(3, 2);
-
-    vbox->addStretch(1);
-
-    englishGroup->setLayout(vbox);
-
-    return englishGroup;
-}
-
-QGroupBox * GUI::arrangeRomajiGroup()
-{
-    romajiGroup = new QGroupBox("Romaji");
-
-    QVBoxLayout *vbox = new QVBoxLayout;
-    QGroupBox *question = new QGroupBox("Word");
-    QVBoxLayout *questionLayout = new QVBoxLayout;
-
-
-    romajiWordLabel = new QLabel("");
-    romajiWordLabel->setFixedSize(100,100);
-    romajiWordLabel->setStyleSheet("font: 20pt;");
-
-    romajiAnswerLabel = new QLabel("Your answer");
-    romajiAnswer = new QLineEdit();
-
-    questionLayout->addWidget(romajiWordLabel);
-    question->setLayout(questionLayout);
-
-    vbox->addWidget(question);
-    vbox->addWidget(romajiAnswerLabel);
-    vbox->addWidget(romajiAnswer);
-    vbox->addWidget(new QLabel(""));
-
-    //vbox->setStretch(0, 6);
-    //vbox->setStretch(3, 2);
-
-    vbox->addStretch(1);
-
-    romajiGroup->setLayout(vbox);
-
-
-    return romajiGroup;
-}
-
-QGroupBox * GUI::arrangeKatakanaGroup()
-{
-    katakanaGroup = new QGroupBox("Katakana");
-
-    QVBoxLayout *vbox = new QVBoxLayout;
-    QGroupBox *question = new QGroupBox("Word");
-    QGroupBox *scribble = new QGroupBox("Your answer");
-    QVBoxLayout *questionLayout = new QVBoxLayout;
-    QVBoxLayout *scribbleLayout = new QVBoxLayout;
-
-
-    katakanaWordLabel = new QLabel("");
-    katakanaWordLabel->setFixedSize(100,100);
-    katakanaWordLabel->setFont(rounded_mgenplus_light);
-
-    katakanaScribble = new ScribbleArea();
-    katakanaScribble->setFixedSize(200,100);
-
-    questionLayout->addWidget(katakanaWordLabel);
-    question->setLayout(questionLayout);
-
-    scribbleLayout->addWidget(katakanaScribble);
-    scribble->setLayout(scribbleLayout);
-
-    vbox->addWidget(question);
-    vbox->addWidget(scribble);
-
-    vbox->addStretch(1);
-
-    katakanaGroup->setLayout(vbox);
-
-
-    return katakanaGroup;
-}
-
-QGroupBox * GUI::arrangeHiraganaGroup()
-{
-    hiraganaGroup = new QGroupBox("Hiragana");
-
-    QVBoxLayout *vbox = new QVBoxLayout;
-    QGroupBox *question = new QGroupBox("Word");
-    QGroupBox *scribble = new QGroupBox("Your answer");
-    QVBoxLayout *questionLayout = new QVBoxLayout;
-    QVBoxLayout *scribbleLayout = new QVBoxLayout;
-
-
-    hiraganaWordLabel = new QLabel("");
-    hiraganaWordLabel->setFixedSize(100,100);
-    hiraganaWordLabel->setFont(rounded_mgenplus_light);
-
-    hiraganaScribble = new ScribbleArea();
-    hiraganaScribble->setFixedSize(200,100);
-
-    questionLayout->addWidget(hiraganaWordLabel);
-    question->setLayout(questionLayout);
-
-    scribbleLayout->addWidget(hiraganaScribble);
-    scribble->setLayout(scribbleLayout);
-
-    vbox->addWidget(question);
-    vbox->addWidget(scribble);
-
-    vbox->addStretch(1);
-
-    hiraganaGroup->setLayout(vbox);
-
-    return hiraganaGroup;
-}
-
-QGroupBox * GUI::arrangeKanjiGroup()
-{
-    kanjiGroup = new QGroupBox("Kanji");
-
-    QVBoxLayout *vbox = new QVBoxLayout;
-    QGroupBox *question = new QGroupBox("Word");
-    QGroupBox *scribble = new QGroupBox("Your answer");
-    QVBoxLayout *questionLayout = new QVBoxLayout;
-    QVBoxLayout *scribbleLayout = new QVBoxLayout;
-
-
-    kanjiWordLabel = new QLabel("");
-    kanjiWordLabel->setFixedSize(100,100);
-    kanjiWordLabel->setFont(rounded_mgenplus_light);
-
-    kanjiScribble = new ScribbleArea();
-    kanjiScribble->setFixedSize(200,100);
-
-    questionLayout->addWidget(kanjiWordLabel);
-    question->setLayout(questionLayout);
-
-    scribbleLayout->addWidget(kanjiScribble);
-    scribble->setLayout(scribbleLayout);
-
-    vbox->addWidget(question);
-    vbox->addWidget(scribble);
-
-    vbox->addStretch(1);
-
-    kanjiGroup->setLayout(vbox);
-
-    return kanjiGroup;
-}
 
 QGroupBox * GUI::arrangeRadioGroup()
 {
@@ -342,4 +204,71 @@ QGroupBox * GUI::arrangeRadioGroup()
     radioGroup->setLayout(radioLayout);
 
     return radioGroup;
+}
+
+QGroupBox * GUI::arrangeLatinGroup(QLabel * (*wordLabel),
+                                   QLineEdit * (*answer), QString name)
+{
+    QGroupBox *group = new QGroupBox(name);
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QGroupBox *question = new QGroupBox("Word");
+    QVBoxLayout *questionLayout = new QVBoxLayout;
+
+
+    *wordLabel = new QLabel("");
+    (*wordLabel)->setFixedSize(200,100);
+    (*wordLabel)->setStyleSheet("font: 20pt;");
+
+    QLabel * answerLabel = new QLabel("Your answer");
+    *answer = new QLineEdit();
+
+    questionLayout->addWidget(*wordLabel);
+    question->setLayout(questionLayout);
+
+    vbox->addWidget(question);
+    vbox->addWidget(answerLabel);
+    vbox->addWidget(*answer);
+    vbox->addWidget(new QLabel(""));
+
+    vbox->addStretch(1);
+
+    group->setLayout(vbox);
+
+
+    return group;
+}
+QGroupBox * GUI::arrangeJapaneseGroup(QLabel * (*wordLabel),
+                                      ScribbleArea* (*scribbleAnswer), QString name)
+{
+    QGroupBox * group = new QGroupBox(name);
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QGroupBox *question = new QGroupBox("Word");
+    QGroupBox *scribble = new QGroupBox("Your answer");
+    QVBoxLayout *questionLayout = new QVBoxLayout;
+    QVBoxLayout *scribbleLayout = new QVBoxLayout;
+
+
+    (*wordLabel) = new QLabel("");
+    (*wordLabel)->setFixedSize(200,100);
+    (*wordLabel)->setFont(rounded_mgenplus_light);
+
+    (*scribbleAnswer) = new ScribbleArea();
+    (*scribbleAnswer)->setFixedSize(200,100);
+
+    questionLayout->addWidget(*wordLabel);
+    question->setLayout(questionLayout);
+
+    scribbleLayout->addWidget(*scribbleAnswer);
+    scribble->setLayout(scribbleLayout);
+
+    vbox->addWidget(question);
+    vbox->addWidget(scribble);
+
+    vbox->addStretch(1);
+
+    group->setLayout(vbox);
+
+    return group;
 }

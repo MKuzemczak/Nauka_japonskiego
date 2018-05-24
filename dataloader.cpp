@@ -50,13 +50,13 @@ bool DataLoader::questNumber(int number, Question & q)
 
     QTextStream in(&wordsFile);
     int line = 0;
-    QString s[5];
+    QString s[ALPHA_AMOUNT];
 
     while(!in.atEnd())
     {
         if(line == number)
         {
-            for(int i = 0; i < 5; i++)
+            for(int i = 0; i < ALPHA_AMOUNT; i++)
                 in >> s[i];
         }
         else
@@ -66,16 +66,14 @@ bool DataLoader::questNumber(int number, Question & q)
 
     int lastQuestionAlphabet = q.questionAlphabet;
 
-    srand ( time(NULL) );
-    q.questionAlphabet = rand() % 5;
-    while(q.questionAlphabet == lastQuestionAlphabet || s[q.questionAlphabet][0] == '-')
-        q.questionAlphabet = rand() % 5;
+    q.questionAlphabet = random.uniform(0, ALPHA_AMOUNT-1);
 
-    q.englishWord = s[0];
-    q.romajiWord = s[1];
-    q.katakanaWord = s[2];
-    q.hiraganaWord = s[3];
-    q.kanjiWord = s[4];
+    while(q.questionAlphabet == lastQuestionAlphabet || s[q.questionAlphabet][0] == '-')
+        q.questionAlphabet = random.uniform(0, ALPHA_AMOUNT-1);
+
+
+    for(int i = 0; i < ALPHA_AMOUNT; i++)
+        q.words[i] = s[i];
 
     return true;
 }
@@ -83,12 +81,12 @@ bool DataLoader::questNumber(int number, Question & q)
 bool DataLoader::randQuest(Question & q)
 {
     int lastQuestion = currentQuestion;
-    srand ( time(NULL) );
-    currentQuestion = rand() % questionAmount;
-    while(currentQuestion == lastQuestion)
-        currentQuestion = rand() % questionAmount;
 
-    qDebug() << "current: " << currentQuestion;
+    currentQuestion = random.uniform(0, questionAmount-1);
+
+    while(currentQuestion == lastQuestion)
+        currentQuestion = random.uniform(0, questionAmount-1);
+
     return questNumber(currentQuestion, q);
 }
 
@@ -102,12 +100,12 @@ bool DataLoader::nextQuest(Question & q)
     return questNumber(currentQuestion, q);
 }
 
+bool DataLoader::prevQuest(Question & q)
+{
+    if(currentQuestion == 0)
+        currentQuestion = questionAmount - 1;
+    else
+        currentQuestion--;
 
-
-std::ifstream& GotoLine(std::ifstream& file, unsigned int num){
-    file.seekg(std::ios::beg);
-    for(int i=0; i < (int)num; ++i){
-        file.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-    }
-    return file;
+    return questNumber(currentQuestion, q);
 }

@@ -18,40 +18,31 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QDir>
+#include <unistd.h>
 
 #include "dataloader.h"
 #include "scribblearea.h"
 #include "answercounter.h"
+#include "alphabetamount.h"
+
+
+
 
 class GUI : public QWidget
 {
     Q_OBJECT
 
     QLabel *headline,
-           *englishWordLabel,
-           *romajiWordLabel,
-           *katakanaWordLabel,
-           *hiraganaWordLabel,
-           *kanjiWordLabel;
+           *wordLabels[ALPHA_AMOUNT];
 
-    ScribbleArea *katakanaScribble,
-                 *hiraganaScribble,
-                 *kanjiScribble;
+    ScribbleArea *scribbles[JAP_ALPH_AMOUNT];
 
-    QLineEdit *englishAnswer,
-              *romajiAnswer;
+    QLineEdit *latinAnswers[LAT_ALPH_AMOUNT];
 
-    QLabel *englishAnswerLabel,
-           *romajiAnswerLabel;
-
-    QGroupBox *englishGroup,
-              *romajiGroup,
-              *katakanaGroup,
-              *hiraganaGroup,
-              *kanjiGroup,
-              *radioGroup;
+    QGroupBox *radioGroup;
 
     QPushButton *nextButton,
+                *previousButton,
                 *randomButton,
                 *checkButton,
                 *okButton;
@@ -72,12 +63,15 @@ class GUI : public QWidget
     QFont rounded_mgenplus_light;
 
     void arrangeGUI();
-    QGroupBox * arrangeEnglishGroup();
-    QGroupBox * arrangeRomajiGroup();
-    QGroupBox * arrangeKatakanaGroup();
-    QGroupBox * arrangeHiraganaGroup();
-    QGroupBox * arrangeKanjiGroup();
     QGroupBox * arrangeRadioGroup();
+
+    QGroupBox * arrangeLatinGroup(QLabel * (*wordLabel),
+                                  QLineEdit * (*answer),
+                                  QString name);
+
+    QGroupBox * arrangeJapaneseGroup(QLabel * (*wordLabel),
+                                     ScribbleArea* (*scribbleAnswer),
+                                     QString name);
 
 
 
@@ -94,6 +88,7 @@ signals:
 
 public slots:
     void nextQuestion();
+    void previousQuestion();
     void randomQuestion();
     void showAnswers();
     void correctAnswersAmountOkPressed();
