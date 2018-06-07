@@ -224,6 +224,11 @@ void GUI::arrangeGUI()
     autoRandomMode->setFixedWidth(200);
     autoRandomMode->move(400, 5);
 
+    questAmountLabel = new QLabel("Amount of questions: " +
+                                  QString::number(loader.getQuestAmount()),
+                                  this);
+    questAmountLabel->setGeometry(1000, 10, 200, 20);
+
     questRangeLineEditLabel = new QLabel("Set range of randomised questions:", this);
     questRangeLineEditLabel->setGeometry(600, 10, 200, 20);
 
