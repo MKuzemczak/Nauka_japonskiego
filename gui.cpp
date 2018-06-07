@@ -224,8 +224,11 @@ void GUI::arrangeGUI()
     autoRandomMode->setFixedWidth(200);
     autoRandomMode->move(400, 5);
 
+    questRangeLineEditLabel = new QLabel("Set range of randomised questions:", this);
+    questRangeLineEditLabel->setGeometry(600, 10, 200, 20);
+
     questRangeLineEdit = new LineEdit(this);
-    questRangeLineEdit->setGeometry(600, 10, 100, 20);
+    questRangeLineEdit->setGeometry(780, 10, 100, 20);
     questRangeLineEdit->setPlaceholderText("e.g.: 0-10");
     //connect(questRangeLineEdit, SIGNAL(focusOut()), this, SLOT(questRangeLineEditFocusOut()));
 
@@ -234,7 +237,7 @@ void GUI::arrangeGUI()
     questRangeLineEdit->setValidator(validator);
 
     setQuestRange = new QPushButton("Apply", this);
-    setQuestRange->setGeometry(710, 8, 70, 24);
+    setQuestRange->setGeometry(890, 8, 70, 24);
     connect(setQuestRange, SIGNAL(pressed()), this, SLOT(changeQuestRange()));
 }
 

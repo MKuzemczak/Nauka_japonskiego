@@ -35,7 +35,8 @@ class GUI : public QWidget
     Q_OBJECT
 
     QLabel *headline,
-           *wordLabels[ALPHA_AMOUNT];
+           *wordLabels[ALPHA_AMOUNT],
+           *questRangeLineEditLabel;
 
     ScribbleArea *scribbles[JAP_ALPH_AMOUNT];
 
