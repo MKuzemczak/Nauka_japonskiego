@@ -9,6 +9,8 @@ DataLoader::DataLoader()
     questionAmount = 0;
     currentQuestion = 0;
 
+    rangeStart = 0;
+
     imageExtension = ".jpg";
 }
 
@@ -32,10 +34,18 @@ void DataLoader::scanPath()
     }
 
     questionAmount = line;
+    doneQuestionsSet.setMaxSize(questionAmount * 0.85);
+    allQuestionsSet = NumberSet(0, questionAmount - 1);
+    toRandomQuestionsSet = allQuestionsSet;
+
+    qDebug() << allQuestionsSet;
+
+    rangeEnd = questionAmount-1;
 }
 
 bool DataLoader::questNumber(int number, Question & q)
 {
+
     if(number > questionAmount || number < 0)
         return false;
 
@@ -68,24 +78,27 @@ bool DataLoader::questNumber(int number, Question & q)
 
     q.questionAlphabet = random.uniform(0, ALPHA_AMOUNT-1);
 
-    while(q.questionAlphabet == lastQuestionAlphabet || s[q.questionAlphabet][0] == '-')
+    while(q.questionAlphabet == lastQuestionAlphabet)
         q.questionAlphabet = random.uniform(0, ALPHA_AMOUNT-1);
 
 
     for(int i = 0; i < ALPHA_AMOUNT; i++)
+    {
+        swapSpaces(s[i]);
+        swapNewLines(s[i]);
         q.words[i] = s[i];
+    }
 
     return true;
 }
 
 bool DataLoader::randQuest(Question & q)
 {
-    int lastQuestion = currentQuestion;
+    int rand = random.uniform(0, ((int)toRandomQuestionsSet.size()) - 1);
 
-    currentQuestion = random.uniform(0, questionAmount-1);
+    qDebug() << "number: " << rand;
 
-    while(currentQuestion == lastQuestion)
-        currentQuestion = random.uniform(0, questionAmount-1);
+    currentQuestion = toRandomQuestionsSet.at(rand);
 
     return questNumber(currentQuestion, q);
 }
@@ -109,3 +122,41 @@ bool DataLoader::prevQuest(Question & q)
 
     return questNumber(currentQuestion, q);
 }
+
+void swapSpaces(QString & s)
+{
+    for(QChar & c : s)
+        if(c == '_')
+            c = ' ';
+}
+
+void swapNewLines(QString & s)
+{
+    for(QChar & c : s)
+        if(c == '/')
+            c = '\n';
+}
+
+void DataLoader::addCurrentToVector()
+{
+    doneQuestionsSet.add(currentQuestion);
+
+    toRandomQuestionsSet = allQuestionsSet - doneQuestionsSet;
+
+    qDebug() << toRandomQuestionsSet;
+}
+
+void DataLoader::setRange(int start, int end)
+{
+    rangeStart = start;
+    rangeEnd = end;
+
+    allQuestionsSet = NumberSet(start, end);
+    toRandomQuestionsSet = allQuestionsSet - toRandomQuestionsSet;
+
+    if(allQuestionsSet.size() < 10)
+        doneQuestionsSet.setMaxSize(allQuestionsSet.size() * 0.5);
+    else
+        doneQuestionsSet.setMaxSize(allQuestionsSet.size() * 0.85);
+}
+

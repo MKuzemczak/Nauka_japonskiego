@@ -3,19 +3,27 @@
 
 GUI::GUI(QWidget *parent) : QWidget(parent)
 {
+    qDebug() << "..,";
     setFixedSize(1250,600);
-
+    qDebug() << "..,,";
 
     fontId = QFontDatabase::addApplicationFont(QDir::currentPath() +
                 "/Data/rounded-mgenplus-20140828/rounded-mgenplus-1c-light.ttf");
     fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
     rounded_mgenplus_light = QFont(fontFamily, 30);
-
+    qDebug() << "..,,,";
     loader.setDataPath(QDir::currentPath() + "/Data/");
     loader.scanPath();
 
+    uncheckHelper = -1;
+
+    okPressed = false;
+
     arrangeGUI();
 
+    loader.randQuest(question);
+    clear();
+    showQuestion();
 }
 
 void GUI::keyPressEvent(QKeyEvent *e)
@@ -56,7 +64,13 @@ void GUI::previousQuestion()
 
 void GUI::randomQuestion()
 {
+    if(!okPressed)
+        loader.addCurrentToVector();
+
+    okPressed = false;
+
     loader.randQuest(question);
+
     if(onlyEnglishQuestionMode->isChecked())
     {
         while(question.words[ENG][0] == '-')
@@ -64,9 +78,16 @@ void GUI::randomQuestion()
 
         question.questionAlphabet = ENG;
     }
+    else if(onlyKanjiQuestionMode->isChecked())
+    {
+        while(question.words[KANJI][0] == '-')
+            loader.randQuest(question);
+
+        question.questionAlphabet = KANJI;
+    }
+
     clear();
     showQuestion();
-    qDebug()<< "alphabet: " << question.questionAlphabet;
 }
 
 void GUI::showQuestion()
@@ -82,6 +103,7 @@ void GUI::showAnswers()
         wordLabels[i]->setText(question.words[i]);
 
     nextButton->hide();
+    previousButton->hide();
     randomButton->hide();
     checkButton->hide();
 
@@ -104,11 +126,21 @@ void GUI::correctAnswersAmountOkPressed()
 {
     answerCounter->increaseCorrectAnswers((double)correctAnswersAmountButtonGroup->checkedId()/4);
 
+    if(correctAnswersAmountButtonGroup->checkedId() == 4)
+        loader.addCurrentToVector();
+
+
     nextButton->show();
+    previousButton->show();
     randomButton->show();
     checkButton->show();
 
     radioGroup->hide();
+
+    okPressed = true;
+
+    if(autoRandomMode->isChecked())
+        randomQuestion();
 }
 
 void GUI::arrangeGUI()
@@ -127,6 +159,7 @@ void GUI::arrangeGUI()
     previousButton->setFixedHeight(50);
     randomButton->setFixedHeight(50);
     checkButton->setFixedHeight(50);
+
 
     connect(nextButton, SIGNAL(pressed()), this, SLOT(nextQuestion()));
     connect(previousButton, SIGNAL(pressed()), this, SLOT(previousQuestion()));
@@ -171,8 +204,38 @@ void GUI::arrangeGUI()
 
     onlyEnglishQuestionMode = new QCheckBox("Only english questions mode", this);
     onlyEnglishQuestionMode->setChecked(false);
-    onlyEnglishQuestionMode->setFixedWidth(400);
-    onlyEnglishQuestionMode->move(20, 10);
+    onlyEnglishQuestionMode->setFixedWidth(200);
+    onlyEnglishQuestionMode->move(10, 5);
+
+    onlyKanjiQuestionMode = new QCheckBox("Only Kanji question mode", this);
+    onlyKanjiQuestionMode->setChecked(false);
+    onlyKanjiQuestionMode->setFixedWidth(200);
+    onlyKanjiQuestionMode->move(200, 5);
+
+    questionModesButtonGroup = new QButtonGroup(this);
+    questionModesButtonGroup->addButton(onlyEnglishQuestionMode);
+    questionModesButtonGroup->addButton(onlyKanjiQuestionMode);
+
+    connect(questionModesButtonGroup, SIGNAL(buttonPressed(int)), this, SLOT(modeButtonsUncheckStart(int)));
+    connect(questionModesButtonGroup, SIGNAL(buttonReleased(int)), this, SLOT(modeButtonsUncheckEnd(int)));
+
+    autoRandomMode = new QCheckBox("Auto-random mode", this);
+    autoRandomMode->setChecked(false);
+    autoRandomMode->setFixedWidth(200);
+    autoRandomMode->move(400, 5);
+
+    questRangeLineEdit = new LineEdit(this);
+    questRangeLineEdit->setGeometry(600, 10, 100, 20);
+    questRangeLineEdit->setPlaceholderText("e.g.: 0-10");
+    //connect(questRangeLineEdit, SIGNAL(focusOut()), this, SLOT(questRangeLineEditFocusOut()));
+
+    QRegExp rx("[0-9]+-[0-9]+");
+    validator = new QRegExpValidator(rx, this);
+    questRangeLineEdit->setValidator(validator);
+
+    setQuestRange = new QPushButton("Apply", this);
+    setQuestRange->setGeometry(710, 8, 70, 24);
+    connect(setQuestRange, SIGNAL(pressed()), this, SLOT(changeQuestRange()));
 }
 
 
@@ -219,9 +282,11 @@ QGroupBox * GUI::arrangeLatinGroup(QLabel * (*wordLabel),
     *wordLabel = new QLabel("");
     (*wordLabel)->setFixedSize(200,100);
     (*wordLabel)->setStyleSheet("font: 20pt;");
+    (*wordLabel)->setWordWrap(true);
 
     QLabel * answerLabel = new QLabel("Your answer");
     *answer = new QLineEdit();
+
 
     questionLayout->addWidget(*wordLabel);
     question->setLayout(questionLayout);
@@ -253,6 +318,7 @@ QGroupBox * GUI::arrangeJapaneseGroup(QLabel * (*wordLabel),
     (*wordLabel) = new QLabel("");
     (*wordLabel)->setFixedSize(200,100);
     (*wordLabel)->setFont(rounded_mgenplus_light);
+    (*wordLabel)->setWordWrap(true);
 
     (*scribbleAnswer) = new ScribbleArea();
     (*scribbleAnswer)->setFixedSize(200,100);
@@ -271,4 +337,58 @@ QGroupBox * GUI::arrangeJapaneseGroup(QLabel * (*wordLabel),
     group->setLayout(vbox);
 
     return group;
+}
+
+void GUI::modeButtonsUncheckStart(int id)
+{
+    if(questionModesButtonGroup->checkedId() == id)
+    {
+        uncheckHelper = id;
+    }
+}
+
+void GUI::modeButtonsUncheckEnd(int id)
+{
+    if(id == uncheckHelper)
+    {
+        questionModesButtonGroup->setExclusive(false);
+        questionModesButtonGroup->button(id)->setChecked(false);
+        questionModesButtonGroup->setExclusive(true);
+        uncheckHelper = -1;
+    }
+}
+
+void GUI::changeQuestRange()
+{
+    QString s = questRangeLineEdit->text();
+    qDebug() << questRangeLineEdit->text();
+
+    QStringList l = s.split("-");
+
+    qDebug() << l;
+
+    if(l.size() == 2)
+    {
+        int s = l[0].toInt(), e = l[1].toInt();
+
+        if(s <= e && !(s > loader.getQuestAmount() - 1) &&
+                !(e > loader.getQuestAmount() - 1))
+        {
+            loader.setRange(s, e);
+            questRangeLineEdit->clearFocus();
+        }
+    }
+}
+
+void GUI::questRangeLineEditFocusOut()
+{
+    if(loader.getRangeStart() == 0 && loader.getRangeEnd() == loader.getQuestAmount()-1)
+        questRangeLineEdit->setText("");
+    else
+    {
+        questRangeLineEdit->setText(QString::number(loader.getRangeStart())+
+                                    "-" +
+                                    QString::number(loader.getRangeEnd()));
+    }
+    questRangeLineEdit->clearFocus();
 }

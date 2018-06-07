@@ -11,7 +11,9 @@ SOURCES += \
     gui.cpp \
     scribblearea.cpp \
     dataloader.cpp \
-    answercounter.cpp
+    answercounter.cpp \
+    numberset.cpp \
+    lineedit.cpp
 
 HEADERS += \
     gui.h \
@@ -19,5 +21,7 @@ HEADERS += \
     dataloader.h \
     answercounter.h \
     randutils.hpp \
-    alphabetamount.h
+    alphabetamount.h \
+    numberset.h \
+    lineedit.h
 

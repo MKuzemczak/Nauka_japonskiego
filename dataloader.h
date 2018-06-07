@@ -9,36 +9,41 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QDebug>
+#include <QLineEdit>
 #include <time.h>
 #include <random>
+#include <vector>
+
 
 #include "randutils.hpp"
 #include "alphabetamount.h"
+#include "numberset.h"
 
-//thread_local std::mt19937 gen{std::random_device{}()};
-
-/*template<typename T>
-T random(T min, T max) {
-    return std::uniform_int_distribution<T>{min, max}(gen);
-}*/
 
 typedef struct question {
     QString words[ALPHA_AMOUNT];
 
     int questionAlphabet;
 
+
 } Question;
 
 class DataLoader
 {
     int questionAmount,
-        currentQuestion;
+        currentQuestion,
+        rangeStart,
+        rangeEnd;
 
     QString dataPath,
             imageExtension;
 
     randutils::mt19937_rng random;
 
+
+    NumberSet doneQuestionsSet,
+              toRandomQuestionsSet,
+              allQuestionsSet;
 
 public:
     DataLoader();
@@ -49,8 +54,15 @@ public:
     bool randQuest(Question & q);
     bool nextQuest(Question & q);
     bool prevQuest(Question & q);
+    void addCurrentToVector();
+    void setRange(int start, int end);
 
+    int getRangeStart() { return rangeStart; }
+    int getRangeEnd() { return rangeEnd; }
+    int getQuestAmount() { return questionAmount; }
 };
 
-std::ifstream& GotoLine(std::ifstream& file, unsigned int num);
+
+void swapSpaces(QString & s);
+void swapNewLines(QString & s);
 #endif // DATALOADER_H

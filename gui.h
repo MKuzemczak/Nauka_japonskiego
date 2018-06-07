@@ -18,13 +18,15 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QDir>
+#include <QRegExpValidator>
 #include <unistd.h>
+
 
 #include "dataloader.h"
 #include "scribblearea.h"
 #include "answercounter.h"
 #include "alphabetamount.h"
-
+#include "lineedit.h"
 
 
 
@@ -45,17 +47,26 @@ class GUI : public QWidget
                 *previousButton,
                 *randomButton,
                 *checkButton,
-                *okButton;
+                *okButton,
+                *setQuestRange;
 
-    QButtonGroup *correctAnswersAmountButtonGroup;
+    QButtonGroup *correctAnswersAmountButtonGroup,
+                 *questionModesButtonGroup;
+    int uncheckHelper;
 
-    QCheckBox *onlyEnglishQuestionMode;
+    QCheckBox *onlyEnglishQuestionMode,
+              *onlyKanjiQuestionMode,
+              *autoRandomMode;
 
     DataLoader loader;
+    bool okPressed;
 
     Question question;
 
     AnswerCounter *answerCounter;
+
+    LineEdit *questRangeLineEdit;
+    QValidator *validator;
 
     //////////////////// font
     int fontId;
@@ -93,6 +104,10 @@ public slots:
     void showAnswers();
     void correctAnswersAmountOkPressed();
     void clear();
+    void modeButtonsUncheckStart(int id);
+    void modeButtonsUncheckEnd(int id);
+    void changeQuestRange();
+    void questRangeLineEditFocusOut();
 };
 
 #endif // GUI_H
