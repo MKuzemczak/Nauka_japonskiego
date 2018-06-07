@@ -235,7 +235,7 @@ void GUI::arrangeGUI()
     questRangeLineEdit = new LineEdit(this);
     questRangeLineEdit->setGeometry(780, 10, 100, 20);
     questRangeLineEdit->setPlaceholderText("e.g.: 0-10");
-    //connect(questRangeLineEdit, SIGNAL(focusOut()), this, SLOT(questRangeLineEditFocusOut()));
+    connect(questRangeLineEdit, SIGNAL(focusOut()), this, SLOT(questRangeLineEditFocusOut()));
 
     QRegExp rx("[0-9]+-[0-9]+");
     validator = new QRegExpValidator(rx, this);
@@ -368,28 +368,26 @@ void GUI::modeButtonsUncheckEnd(int id)
 
 void GUI::changeQuestRange()
 {
-    QString s = questRangeLineEdit->text();
-    qDebug() << questRangeLineEdit->text();
 
-    QStringList l = s.split("-");
-
-    qDebug() << l;
-
-    if(l.size() == 2)
+    if(rans <= rane && !(rans > loader.getQuestAmount() - 1) &&
+                !(rane > loader.getQuestAmount() - 1))
     {
-        int s = l[0].toInt(), e = l[1].toInt();
-
-        if(s <= e && !(s > loader.getQuestAmount() - 1) &&
-                !(e > loader.getQuestAmount() - 1))
-        {
-            loader.setRange(s, e);
-            questRangeLineEdit->clearFocus();
-        }
+        loader.setRange(rans, rane);
+        questRangeLineEditFocusOut();
     }
 }
 
 void GUI::questRangeLineEditFocusOut()
 {
+    if(questRangeLineEdit->hasAcceptableInput())
+    {
+
+        QString s = questRangeLineEdit->text();
+        QStringList l = s.split("-");
+
+        rans = l[0].toInt();
+        rane = l[1].toInt();
+    }
     if(loader.getRangeStart() == 0 && loader.getRangeEnd() == loader.getQuestAmount()-1)
         questRangeLineEdit->setText("");
     else
@@ -398,5 +396,4 @@ void GUI::questRangeLineEditFocusOut()
                                     "-" +
                                     QString::number(loader.getRangeEnd()));
     }
-    questRangeLineEdit->clearFocus();
 }

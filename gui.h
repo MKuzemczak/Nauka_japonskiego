@@ -69,6 +69,7 @@ class GUI : public QWidget
 
     LineEdit *questRangeLineEdit;
     QValidator *validator;
+    int rans, rane;
 
     //////////////////// font
     int fontId;
