@@ -105,8 +105,8 @@ bool DataLoader::randQuest(Question & q)
 
 bool DataLoader::nextQuest(Question & q)
 {
-    if(currentQuestion == questionAmount - 1)
-        currentQuestion = 0;
+    if(currentQuestion >= rangeEnd || currentQuestion < rangeStart)
+        currentQuestion = rangeStart;
     else
         currentQuestion++;
 
@@ -115,8 +115,8 @@ bool DataLoader::nextQuest(Question & q)
 
 bool DataLoader::prevQuest(Question & q)
 {
-    if(currentQuestion == 0)
-        currentQuestion = questionAmount - 1;
+    if(currentQuestion <= rangeStart || currentQuestion > rangeEnd)
+        currentQuestion = rangeEnd;
     else
         currentQuestion--;
 
@@ -139,7 +139,8 @@ void swapNewLines(QString & s)
 
 void DataLoader::addCurrentToVector()
 {
-    doneQuestionsSet.add(currentQuestion);
+    if(!doneQuestionsSet.contains(currentQuestion))
+        doneQuestionsSet.add(currentQuestion);
 
     toRandomQuestionsSet = allQuestionsSet - doneQuestionsSet;
 

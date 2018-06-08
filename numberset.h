@@ -16,6 +16,7 @@ public:
     void add(int number);
     void setMaxSize(const int size);
     const NumberSet operator - (const NumberSet & ns);
+    bool contains(int n);
 };
 
 #endif // NUMBERSET_H

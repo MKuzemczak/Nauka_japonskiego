@@ -49,3 +49,11 @@ const NumberSet NumberSet::operator - (const NumberSet & ns)
 
     return ret;
 }
+
+bool NumberSet::contains(int n)
+{
+    for(int i : *this)
+        if(n == i)
+            return true;
+    return false;
+}
